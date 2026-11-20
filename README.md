@@ -13,4 +13,4 @@ The demo evaluates two synthetic responses. The first passes. The second reports
 
 ## Integration and limitations
 
-Call `evaluate(response)` with a parsed model response. It returns a passed flag and validation errors. Source IDs are checked for structure only. Factual accuracy, source existence, citation support, and answer relevance require additional evaluation against a trusted corpus. Model-provider integration is an extension point. The included examples are synthetic.
+Call `evaluate(response)` with a parsed model response. It returns a passed flag and validation errors. Pass an explicit registry with `evaluate(response, known_sources=["example-1"])` to reject unknown source IDs. Duplicate source IDs also fail validation. Omitting the registry performs structural checks. Factual accuracy, source existence, citation support, and answer relevance require additional evaluation against a trusted corpus. Model-provider integration is an extension point. The included examples are synthetic.
