@@ -17,7 +17,7 @@ Call `evaluate(response)` with a parsed model response. It returns a passed flag
 
 ## Factual-support example
 
-Run `python benchmark.py`. The example checks whether the complete summary exactly matches a cited source in a small fictional policy corpus. It rejects invented durations, wrong citations, unknown sources, extra unsupported claims, missing citations, and duplicate citations. This conservative exact-evidence check rejects paraphrases. It establishes a reproducible baseline for testing citation handling.
+Run `python benchmark.py`. The example checks cited evidence using exact matching and two controlled paraphrase grammars. It rejects invented durations, wrong citations, unknown sources, extra unsupported claims, missing citations, and duplicate citations. Wording outside the supported grammars is rejected. It establishes a reproducible baseline for testing citation handling.
 
 The eleven labeled cases represent common structural and grounding failure modes. They are synthetic examples. Assessing a real deployment requires independently labeled examples from its actual documents, including supported paraphrases, contradictions, numerical claims, and unanswerable questions. Benchmark correctness measures agreement with these eleven labels.
 
@@ -43,3 +43,7 @@ The benchmark includes a supported paraphrase, a direct contradiction, and an un
 The current evaluator recognizes complete retention-duration and operating-region statements using two explicit grammars. It compares extracted facts against the cited source text. The 11-case fixture now passes, including the supported paraphrase. Additional regression cases reject negation, changed durations, exceptions, and appended claims. The benchmark exits successfully only when every fixture label matches. This is a narrow rule-based example. General semantic entailment and independent real-document evaluation remain extension points.
 
 The earlier exact-match baseline produced precision 1.0 and recall 2/3. The current controlled grammar produces precision 1.0 and recall 1.0 on the same fixed synthetic cases. These fixture results do not establish accuracy on unseen documents.
+
+## Broader challenge report
+
+Run `python challenge.py` to inspect five additional synthetic cases. The current evaluator matches three labels and misses two supported paraphrases, including a number written as a word. This exploratory report prints every outcome and exits normally. The separate strict benchmark remains the regression gate. Real-document accuracy remains unmeasured.
