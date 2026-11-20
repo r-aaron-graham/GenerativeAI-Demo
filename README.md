@@ -19,7 +19,7 @@ Call `evaluate(response)` with a parsed model response. It returns a passed flag
 
 Run `python benchmark.py`. The example checks whether the complete summary exactly matches a cited source in a small fictional policy corpus. It rejects invented durations, wrong citations, unknown sources, extra unsupported claims, missing citations, and duplicate citations. This conservative exact-evidence check rejects paraphrases. It establishes a reproducible baseline for testing citation handling.
 
-The eight labeled cases represent common structural and grounding failure modes. They are synthetic examples. Assessing a real deployment requires independently labeled examples from its actual documents, including supported paraphrases, contradictions, numerical claims, and unanswerable questions. Benchmark correctness measures agreement with these eight labels.
+The eleven labeled cases represent common structural and grounding failure modes. They are synthetic examples. Assessing a real deployment requires independently labeled examples from its actual documents, including supported paraphrases, contradictions, numerical claims, and unanswerable questions. Benchmark correctness measures agreement with these eleven labels.
 
 ## Deployment verification
 
@@ -32,4 +32,8 @@ docker build -t generative-evaluation .
 docker run --rm --read-only --network none generative-evaluation
 ```
 
-Expected benchmark output contains correct=8 and total=8, with exit status 0. The container runs as an unprivileged user and needs no network access. The deployment workflow builds and runs this image on GitHub Actions. A successful container check verifies this batch evaluation package. Operation within a target production service requires separate integration and monitoring.
+Expected benchmark output contains correct=10 and total=11, with exit status 0. The container runs as an unprivileged user and needs no network access. The deployment workflow builds and runs this image on GitHub Actions. A successful container check verifies this batch evaluation package. Operation within a target production service requires separate integration and monitoring.
+
+## Paraphrase and contradiction benchmark
+
+The benchmark includes a supported paraphrase, a direct contradiction, and an unsupported location. The exact-match baseline rejects the supported paraphrase, recording one false negative. Expected precision is 1.0 and recall is 2/3 on this synthetic fixture. These values describe the fixed examples. The benchmark exits successfully when no unsupported claim is accepted. Regression tests also check the known paraphrase limitation, so a change in behavior requires explicit review.

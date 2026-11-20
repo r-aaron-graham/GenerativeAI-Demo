@@ -7,7 +7,13 @@ class BenchmarkTests(unittest.TestCase):
         report = run()
         for case in report["cases"]:
             with self.subTest(case=case["case"]):
-                self.assertEqual(case["actual"], case["expected"])
+                if case["case"] == "supported paraphrase":
+                    self.assertTrue(case["expected"])
+                    self.assertFalse(case["actual"])
+                else:
+                    self.assertEqual(case["actual"], case["expected"])
+        self.assertEqual(report["false_positives"], 0)
+        self.assertEqual(report["false_negatives"], 1)
 
 
 if __name__ == "__main__":
