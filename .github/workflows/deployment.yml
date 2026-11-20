@@ -1,0 +1,15 @@
+name: Deployment verification
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: docker build -t generative-evaluation .
+      - run: docker run --rm --read-only --network none generative-evaluation python -m unittest -v
+      - run: docker run --rm --read-only --network none generative-evaluation
