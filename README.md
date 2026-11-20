@@ -47,3 +47,11 @@ The earlier exact-match baseline produced precision 1.0 and recall 2/3. The curr
 ## Broader challenge report
 
 Run `python challenge.py` to inspect five additional synthetic cases. The current evaluator matches three labels and misses two supported paraphrases, including a number written as a word. This exploratory report prints every outcome and exits normally. The separate strict benchmark remains the regression gate. Real-document accuracy remains unmeasured.
+
+## Package installation
+
+Run `python -m pip install .` from the repository root. The package has no runtime dependencies and requires Python 3.12 or later. Run `python -m benchmark` after installation.
+
+## Security checks
+
+The security workflow scans all three application modules with Bandit. See SECURITY.md for reporting guidance and deployment scope.
