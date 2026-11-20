@@ -32,8 +32,14 @@ docker build -t generative-evaluation .
 docker run --rm --read-only --network none generative-evaluation
 ```
 
-Expected benchmark output contains correct=10 and total=11, with exit status 0. The container runs as an unprivileged user and needs no network access. The deployment workflow builds and runs this image on GitHub Actions. A successful container check verifies this batch evaluation package. Operation within a target production service requires separate integration and monitoring.
+Expected benchmark output contains correct=11 and total=11, with exit status 0. The container runs as an unprivileged user and needs no network access. The deployment workflow builds and runs this image on GitHub Actions. A successful container check verifies this batch evaluation package. Operation within a target production service requires separate integration and monitoring.
 
 ## Paraphrase and contradiction benchmark
 
-The benchmark includes a supported paraphrase, a direct contradiction, and an unsupported location. The exact-match baseline rejects the supported paraphrase, recording one false negative. Expected precision is 1.0 and recall is 2/3 on this synthetic fixture. These values describe the fixed examples. The benchmark exits successfully when no unsupported claim is accepted. Regression tests also check the known paraphrase limitation, so a change in behavior requires explicit review.
+The benchmark includes a supported paraphrase, a direct contradiction, and an unsupported location. The original exact-match baseline rejected the supported paraphrase, recording one false negative. The original baseline precision was 1.0 and recall was 2/3 on this synthetic fixture. These values describe the fixed examples. The current behavior and benchmark gate are described below.
+
+## Controlled paraphrase evaluation
+
+The current evaluator recognizes complete retention-duration and operating-region statements using two explicit grammars. It compares extracted facts against the cited source text. The 11-case fixture now passes, including the supported paraphrase. Additional regression cases reject negation, changed durations, exceptions, and appended claims. The benchmark exits successfully only when every fixture label matches. This is a narrow rule-based example. General semantic entailment and independent real-document evaluation remain extension points.
+
+The earlier exact-match baseline produced precision 1.0 and recall 2/3. The current controlled grammar produces precision 1.0 and recall 1.0 on the same fixed synthetic cases. These fixture results do not establish accuracy on unseen documents.
