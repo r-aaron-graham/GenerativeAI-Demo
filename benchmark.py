@@ -1,5 +1,6 @@
 """Run a synthetic exact-evidence support benchmark."""
 import json
+import re
 from evaluate import evaluate
 
 SOURCES = {
@@ -21,13 +22,35 @@ CASES = [
 ]
 
 
+def canonical_fact(text):
+    """Recognize only complete statements in two controlled policy grammars."""
+    normalized = text.strip().lower().rstrip(".")
+    retention = re.fullmatch(
+        r"(?:the fictional company retains audit logs|audit logs are (?:retained|kept)) for (\d+) days",
+        normalized,
+    )
+    if retention:
+        return ("retention_days", int(retention.group(1)))
+    region = re.fullmatch(
+        r"(?:the fictional service|the service) operates in (?:the )?([a-z]+)(?: region)?",
+        normalized,
+    )
+    if region:
+        return ("region", region.group(1))
+    return None
+
+
 def factual_support(response, sources):
     result = evaluate(response, sources)
     if not result["passed"]:
         return result
     evidence = [sources[source].strip() for source in response["sources"]]
-    if response["summary"].strip() not in evidence:
-        return {"passed": False, "errors": ["Summary does not exactly match cited evidence"]}
+    claim = response["summary"].strip()
+    fact = canonical_fact(claim)
+    if claim not in evidence and (
+        fact is None or not any(canonical_fact(text) == fact for text in evidence)
+    ):
+        return {"passed": False, "errors": ["Summary is outside the supported evidence grammar or conflicts with cited evidence"]}
     return result
 
 
@@ -52,4 +75,4 @@ def run():
 if __name__ == "__main__":
     report = run()
     print(json.dumps(report, indent=2))
-    raise SystemExit(0 if report["false_positives"] == 0 else 1)
+    raise SystemExit(0 if report["correct"] == report["total"] else 1)
