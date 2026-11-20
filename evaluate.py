@@ -2,7 +2,7 @@
 import json
 
 
-def evaluate(response):
+def evaluate(response, known_sources=None):
     if not isinstance(response, dict):
         return {"passed": False, "errors": ["Response must be an object"]}
     errors = []
@@ -15,6 +15,13 @@ def evaluate(response):
         not isinstance(source, str) or not source.strip() for source in sources
     ):
         errors.append("Sources must be a nonempty list of source IDs")
+    if not errors:
+        if len(set(sources)) != len(sources):
+            errors.append("Source IDs must be unique")
+        if known_sources is not None:
+            unknown = sorted(set(sources) - set(known_sources))
+            if unknown:
+                errors.append("Unknown source IDs: " + ", ".join(unknown))
     return {"passed": not errors, "errors": errors}
 
 
